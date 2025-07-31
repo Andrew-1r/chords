@@ -56,10 +56,14 @@ def extract_and_clean_section(raw_content: str) -> str | None:
     section = re.sub(r'\[ch\]', '<strong>', section)
     section = re.sub(r'\[/ch\]', '</strong>', section)
 
-
     # Strip trailing whitespace from lines but keep structure
     lines = [line.rstrip() for line in section.splitlines()]
+    for line in lines:
+        print(line)
+    
     cleaned = '\n'.join(lines)
+    cleaned = re.sub(r'\n{2,}', '\n\n', cleaned)  # ensures max 1 blank line
+
 
     return cleaned
 
@@ -77,7 +81,7 @@ def save_songs(filepath: str, songs: list) -> None:
         json.dump(songs, f, ensure_ascii=False, indent=2)
 
 def main():
-    url = 'https://tabs.ultimate-guitar.com/tab/archie-roach/ive-lied-chords-732474'
+    url = input("Please paste in a valid URL")
     html_content = fetch_url_content(url)
 
     if not html_content:
@@ -88,6 +92,9 @@ def main():
     if not song_title or not artist_name:
         print("Missing title or artist in HTML content.")
         return
+    
+    song_title = song_title.title()
+    artist_name = artist_name.title()
 
     body_text = extract_and_clean_section(html_content)
     if not body_text:

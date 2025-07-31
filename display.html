@@ -1,4 +1,3 @@
-<!-- TODO: text will wrap to second column and split up chords and lyrics -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,55 +9,90 @@
     pre {
       white-space: pre-wrap;
       font-family: monospace;
-      font-size: 0.9rem;
+      font-size: 1.1rem;
       column-count: 1;
       column-gap: 2rem;
     }
+    strong {
+      color: thistle;
+      background-color: rgba(179, 51, 51, 0.1); /* subtle transparent highlight */
+      /* avoid padding/margin */
+    }
 
-    @media (min-width: 768px) {
+    @media (min-width: 950px) {
       pre {
         column-count: 2; /* 2 columns on medium+ screens */
       }
     }
+    @media (min-width: 2000px) {
+      pre {
+        column-count: 3; /* 3 columns on large screens */
+      }
+    }
   </style>
 </head>
-<body>
-  <div class="container py-5">
+<body class="bg-dark text-light min-vh-100">
+  <div class="container-fluid">
     <h1 class="mb-4 text-center">Chord Book</h1>
-    <div id="songs-container" class="row gy-4"></div>
+
+    <div class="mb-4">
+      <label for="song-select" class="form-label text-light">Select a Song</label>
+      <select id="song-select" class="form-select bg-dark text-light">
+        <option value="" disabled selected>Choose a song...</option>
+      </select>
+    </div>
+
+    <div id="song-display" class="card shadow-sm d-none bg-dark text-light">
+      <div class="card-body">
+        <h3 id="song-title" class="card-title text-capitalize"></h3>
+        <h6 id="song-artist" class="card-subtitle mb-3 text-muted text-capitalize"></h6>
+        <pre id="song-body"></pre>
+      </div>
+    </div>
   </div>
 
   <script>
+    let songs = [];
+
     fetch('songs.json')
       .then(res => {
         if (!res.ok) throw new Error("Failed to load songs.json");
         return res.json();
       })
-      .then(renderSongs)
+      .then(data => {
+        songs = data;
+        populateDropdown(songs);
+      })
       .catch(err => {
-        document.getElementById("songs-container").innerHTML =
-          `<div class="col-12 text-danger">Error: ${err.message}</div>`;
+        document.getElementById("song-display").innerHTML =
+          `<div class="text-danger">Error: ${err.message}</div>`;
       });
 
-    function renderSongs(songs) {
-      const container = document.getElementById("songs-container");
-      container.innerHTML = '';
-
-      songs.forEach(song => {
-        const col = document.createElement("div");
-        col.className = "col-12";
-
-        col.innerHTML = `
-          <div class="card shadow-sm">
-            <div class="card-body">
-              <h3 class="card-title text-capitalize">${song.title}</h3>
-              <h6 class="card-subtitle mb-3 text-muted text-capitalize">${song.artist}</h6>
-              <pre>${song.body}</pre>
-            </div>
-          </div>
-        `;
-        container.appendChild(col);
+    function populateDropdown(songs) {
+      const select = document.getElementById('song-select');
+      songs.forEach((song, index) => {
+        const option = document.createElement('option');
+        option.value = index;
+        option.textContent = `${song.title} — ${song.artist}`;
+        select.appendChild(option);
       });
+
+      select.addEventListener('change', () => {
+        renderSong(+select.value);
+      });
+    }
+
+    function renderSong(index) {
+      if (index == null || !songs[index]) {
+        document.getElementById('song-display').classList.add('d-none');
+        return;
+      }
+      const song = songs[index];
+      // removed artist name and song title as it was taking up space
+      // document.getElementById('song-title').textContent = song.title;
+      // document.getElementById('song-artist').textContent = song.artist;
+      document.getElementById('song-body').innerHTML = song.body;
+      document.getElementById('song-display').classList.remove('d-none');
     }
   </script>
 </body>
