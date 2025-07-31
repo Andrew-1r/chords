@@ -58,12 +58,22 @@ def extract_and_clean_section(raw_content: str) -> str | None:
 
     # Strip trailing whitespace from lines but keep structure
     lines = [line.rstrip() for line in section.splitlines()]
-    for line in lines:
-        print(line)
-    
-    cleaned = '\n'.join(lines)
-    cleaned = re.sub(r'\n{2,}', '\n\n', cleaned)  # ensures max 1 blank line
 
+    # Remove blank lines that come directly after lines ending with ']'
+    cleaned_lines = []
+    skip_next_blank = False
+    for line in lines:
+        if skip_next_blank and line.strip() == '':
+            # skip this blank line
+            continue
+        cleaned_lines.append(line)
+        # Set flag if current line ends with ']'
+        skip_next_blank = line.rstrip().endswith(']')
+
+    cleaned = '\n'.join(cleaned_lines)
+
+    # Also ensure max 1 blank line anywhere (optional)
+    cleaned = re.sub(r'\n{3,}', '\n\n', cleaned)
 
     return cleaned
 
@@ -81,7 +91,7 @@ def save_songs(filepath: str, songs: list) -> None:
         json.dump(songs, f, ensure_ascii=False, indent=2)
 
 def main():
-    url = input("Please paste in a valid URL")
+    url = input("Enter URL: ")
     html_content = fetch_url_content(url)
 
     if not html_content:
