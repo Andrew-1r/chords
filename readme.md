@@ -2,11 +2,11 @@
 
 # How to use
 
-Run the python file parse.py
+Run `parse.py`
 
-Copy paste a URL from ultimate guitar into it
+It will ask for a URL, give it one from ultimate guitar.
 
-If the song begins with something like `[Intro]`, `[Verse 1]` etc. manually enter it to the start of the song in songs.json (it will be the last entry).
+If the song begins with something like `[Intro]`, `[Verse 1]` etc. manually enter it to the start of the song in `songs.json` (it will be the last entry).
 
 If the first line of the song has chords with leading whitespace you have to manually fix this up as well doing the same method.
 
