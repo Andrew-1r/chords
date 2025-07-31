@@ -133,8 +133,8 @@
     } else {
       const speed = parseFloat(scrollSpeedSelect.value);
       scrollInterval = setInterval(() => {
-        window.scrollBy(0, 1); // Scroll down 1px
-      }, 20 / speed); // Adjust interval based on speed
+        window.scrollTo(0, window.pageYOffset + 1);
+      }, 20 / speed);
       autoscrollBtn.textContent = 'Stop Autoscroll';
       console.log("auto scroll stopped")
     }
