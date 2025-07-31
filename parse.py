@@ -77,7 +77,7 @@ def save_songs(filepath: str, songs: list) -> None:
         json.dump(songs, f, ensure_ascii=False, indent=2)
 
 def main():
-    url = 'https://tabs.ultimate-guitar.com/tab/angel-olsen/chasing-the-sun-chords-4271452'  # replace with your URL
+    url = 'https://tabs.ultimate-guitar.com/tab/archie-roach/ive-lied-chords-732474'
     html_content = fetch_url_content(url)
 
     if not html_content:
