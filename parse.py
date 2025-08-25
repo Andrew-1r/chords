@@ -8,6 +8,9 @@ import json
 import os
 
 def fetch_url_content(url: str) -> str | None:
+    """
+    Takes an ultimate guitar URL and returns a string of html content from it.
+    """
     try:
         result = subprocess.run(['curl', '-s', url], capture_output=True, text=True)
         return result.stdout if result.returncode == 0 else None
@@ -16,6 +19,10 @@ def fetch_url_content(url: str) -> str | None:
         return None
 
 def extract_and_clean_title_and_artist(content: str) -> tuple[str | None, str | None]:
+    """ 
+    Takes html content parsed from fetch_url_content and gets title and artist
+    name from it.
+    """
     # Extract <title> tag text
     match = re.search(r'<title>(.*?)</title>', content, re.IGNORECASE)
     if not match:
@@ -34,6 +41,11 @@ def extract_and_clean_title_and_artist(content: str) -> tuple[str | None, str | 
     return song, artist
 
 def extract_and_clean_section(raw_content: str) -> str | None:
+    """
+    Takes raw html content and returns chords from it.
+
+    See readme for TODO items for this function.
+    """
     # Find first [ch]
     start_idx = raw_content.find('[ch]')
     if start_idx == -1:
@@ -72,12 +84,15 @@ def extract_and_clean_section(raw_content: str) -> str | None:
 
     cleaned = '\n'.join(cleaned_lines)
 
-    # Also ensure max 1 blank line anywhere (optional)
+    # Also ensure max 1 blank line anywhere
     cleaned = re.sub(r'\n{3,}', '\n\n', cleaned)
 
     return cleaned
 
 def load_songs(filepath: str) -> list:
+    """
+    Load previously parsed songs from songs.json.
+    """
     if not os.path.exists(filepath):
         return []
     with open(filepath, 'r', encoding='utf-8') as f:
@@ -87,6 +102,9 @@ def load_songs(filepath: str) -> list:
             return []
 
 def save_songs(filepath: str, songs: list) -> None:
+    """
+    Save all songs to songs.json file.
+    """
     with open(filepath, 'w', encoding='utf-8') as f:
         json.dump(songs, f, ensure_ascii=False, indent=2)
 
